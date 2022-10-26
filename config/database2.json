@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "spear_development",
+    "dialect": "sqlite",
+    "storage": "db/spear_dev_db.sqlite"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "spear_test",
+    "dialect": "sqlite",
+    "storage": "db/spear_test_db.sqlite"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "spear_production",
+    "dialect": "sqlite",
+    "storage": "db/spear_db.sqlite"
+  }
+}
