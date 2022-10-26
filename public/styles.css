@@ -1,0 +1,57 @@
+.app-logo {
+	height: 30px;
+	/* width: 40px; */
+}
+
+.top-bar {
+	background-color: #15c39a;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: stretch;
+	position: fixed;
+	width: 100%;
+	z-index: 5000 !important;
+	/* padding: 10px; */
+}
+
+.top-bar > .title-bar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-left: 5px;
+}
+
+.top-btn {
+	background-color: transparent;
+	border: 0px;
+	padding: 6px 13px;
+	color: white;
+}
+
+.close-btn:hover {
+	background-color: red;
+}
+
+.max-btn:hover,
+.min-btn:hover {
+	background-color: #119059;
+}
+
+.title-bar > .title {
+	color: white;
+	/* font-weight: 500; */
+}
+
+.draggable {
+	-webkit-app-region: drag;
+}
+
+.no-drag {
+	-webkit-app-region: no-drag;
+}
+
+/* hide scrollbar */
+/* ::-webkit-scrollbar {
+	display: none;
+} */
