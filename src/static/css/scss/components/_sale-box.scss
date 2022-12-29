@@ -1,0 +1,41 @@
+@import "../shared/colors";
+
+.sale-box {
+	min-height: 80vh;
+	.product {
+		&:hover {
+			background-color: $secondary-color;
+			cursor: pointer;
+		}
+	}
+
+	.box {
+		border: 2px solid $primary-color;
+	}
+
+	.products {
+		overflow-y: scroll;
+		height: 80vh !important;
+	}
+}
+
+// .pos-header {
+// 	margin-top: -30px;
+// 	position: fixed !important;
+// 	top: 0 !important;
+// }
+
+.categories-line {
+	// overflow-x: scroll;
+
+	.line-card {
+		min-width: 150px;
+		max-height: 100px;
+		border: 2px solid #ccc;
+
+		&:hover {
+			background-color: #ccc;
+			cursor: pointer;
+		}
+	}
+}

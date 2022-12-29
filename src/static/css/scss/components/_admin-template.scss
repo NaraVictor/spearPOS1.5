@@ -1,0 +1,82 @@
+@import "../shared/colors";
+
+.admin-template {
+	// height: 100vh;
+
+	.nav-links {
+		margin: 0px;
+		padding: 0px;
+
+		li {
+			list-style-type: none;
+		}
+
+		a {
+			text-decoration: none;
+			color: #333;
+			padding: 5px 0px;
+
+			&:hover {
+				color: $primary-color;
+			}
+		}
+
+		.active-link {
+			color: $spear-green;
+		}
+
+		.deep-links {
+			.link {
+				padding: 3px;
+				display: block;
+				border-radius: 5px;
+			}
+			.active {
+				color: $primary-color;
+				background-color: #ddd;
+				font-weight: bold;
+			}
+		}
+	}
+
+	.nav-link {
+		font-weight: bold;
+		display: flex;
+	}
+
+	.title {
+		color: $spear-purple-darker;
+		font-weight: 500;
+	}
+
+	.content {
+		background-color: $secondary-color;
+		height: 100%;
+		width: 100%;
+		z-index: 100;
+
+		// height: 100vh;
+	}
+
+	.nav-section {
+		position: fixed;
+		height: 100vh;
+		z-index: 500;
+	}
+}
+
+.summary {
+	.box {
+		h3 {
+			font-size: 2.5em;
+			margin-bottom: 1px;
+			// color: $primary-color;
+			font-weight: bold;
+		}
+
+		small {
+			// font-size: 1.2em;
+			color: #666;
+		}
+	}
+}
