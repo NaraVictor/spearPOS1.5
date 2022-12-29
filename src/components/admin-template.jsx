@@ -8,6 +8,7 @@ import { LockFilled, PoweroffOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import ChangeUserPassword from "./change-password";
 import { useHistory } from "react-router-dom";
+import CopyRight from "./copyright";
 
 
 //
@@ -109,7 +110,7 @@ const AdminTemplate = ( props ) => {
 					<div className="p-4 content">{ props.children }
 
 						<div className="py-3 text-center">
-							spearPOS (v1.5.6) <strong>&copy; { new Date().getFullYear() }</strong> Waffle LLC  | +233 (0)50 915 2188
+							<CopyRight />  | +233 (0)50 915 2188
 						</div>
 					</div>
 

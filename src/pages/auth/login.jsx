@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import { authenticate, setRole } from "../../helpers/auth";
 import { toggleRegisterState } from "./../../helpers/utilities";
 import { fetchData, postData } from "./../../helpers/api";
-import logo from "../../static/img/icon-lite.png";
+import logo from "../../static/img/icon-pro.png";
 import PageTitle from '../../components/page-title'
 import { Button } from 'antd'
+import CopyRight from "../../components/copyright";
 
 const LoginPage = ( props ) => {
 	const { register, handleSubmit } = useForm();
@@ -122,8 +123,8 @@ const LoginPage = ( props ) => {
 								<Link to="/change-password">Change password</Link>
 							</div>
 						</form>
-						<small className="mt-1 d-block">&copy;{ new Date().getFullYear() } Waffle LLC All rights reserved.</small>
-						<small className="d-block">version 1.5.0</small>
+						<small className="mt-1 d-block"><CopyRight /> All rights reserved.</small>
+
 					</div>
 				</div>
 

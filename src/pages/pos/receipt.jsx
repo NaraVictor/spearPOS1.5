@@ -6,12 +6,11 @@ import { fetchData } from "../../helpers/api";
 import { cedisLocale } from "./../../helpers/utilities";
 import { useReactToPrint } from "react-to-print";
 
-const SaleReceipt = ( { saleId } ) =>
-{
+const SaleReceipt = ( { saleId } ) => {
 	// variables
 	const printArea = useRef();
 	const { Option } = Select
-	const printSize = localStorage.getItem( 'printerSize' ) || '58'
+	const printSize = localStorage.getItem( 'printerSize' ) || '58' //defaults printer dimension to 58mm when a prev is not found
 
 
 	// 
@@ -27,29 +26,25 @@ const SaleReceipt = ( { saleId } ) =>
 		bodyClass: "sale-receipt"
 	} );
 
-	const fetchCompanyRecord = () =>
-	{
+	const fetchCompanyRecord = () => {
 		fetchData( "company" ).then(
 			( res ) => res.status === 200 && setCompany( res.data.data[ 0 ] )
 		);
 	};
 
-	const fetchSale = () =>
-	{
+	const fetchSale = () => {
 		fetchData( `sales/${ saleId }` ).then(
 			( res ) => res.status === 200 && setSale( res.data.data )
 		);
 	};
 
 
-	const handleSizeChange = ( size ) =>
-	{
+	const handleSizeChange = ( size ) => {
 		setSize( size )
 		localStorage.setItem( 'printerSize', _.toString( size ) )
 	}
 
-	useEffect( () =>
-	{
+	useEffect( () => {
 		fetchCompanyRecord();
 		fetchSale();
 	}, [ saleId ] );

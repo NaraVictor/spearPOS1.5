@@ -2,16 +2,22 @@ import { cedisLocale } from "../helpers/utilities";
 import { format } from 'date-fns'
 import { Divider, Tag } from "antd";
 
-const ProductDetail = ( { prod } ) =>
-{
+const ProductDetail = ( { prod } ) => {
+
 	return (
 		<>
 			<div className="row mb-3">
-				<div className="col-12">
+				<div className="col-5">
 					{
 						prod.isAService && <Tag as color="geekblue"><strong>SERVICE</strong></Tag>
 					}
 				</div>
+				{
+					prod?.code &&
+					<div className="col-5 p-1 text-center bg-success text-white rounded">
+						barcode active ({ prod.code })
+					</div>
+				}
 			</div>
 			<div className="row">
 				<div className="col-md-4">
@@ -165,8 +171,6 @@ const ProductDetail = ( { prod } ) =>
 
 				</div>
 			</div>
-
-
 		</>
 	);
 };

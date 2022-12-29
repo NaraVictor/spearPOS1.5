@@ -6,8 +6,7 @@ import { deleteData, fetchData } from "../../helpers/api";
 // icons
 import ProductForm from "./../../components/product";
 import ProductDetail from "../../components/product-detail";
-import
-{
+import {
 	PageHeader,
 	Button,
 	Modal,
@@ -19,21 +18,21 @@ import
 	Input,
 } from "antd";
 import ProductEdit from "./../../components/product-edit";
-import
-{
+import {
 	AlertFilled,
 	DeleteOutlined,
 	EditOutlined,
 	FolderOpenTwoTone,
 	PlusOutlined,
+	PrinterOutlined,
 	ReloadOutlined,
 } from "@ant-design/icons";
 import ButtonGroup from "antd/lib/button/button-group";
 import { getRole } from "../../helpers/auth";
 import { format, } from "date-fns";
 import smalltalk from 'smalltalk'
-const InventoryPage = ( props ) =>
-{
+import ProductLabels from "./labels";
+const InventoryPage = ( props ) => {
 	const [ products, setProducts ] = useState( [] );
 	const [ filteredData, setFilteredData ] = useState( [] );
 	const [ modal, setModal ] = useState( {
@@ -43,8 +42,7 @@ const InventoryPage = ( props ) =>
 		width: "",
 	} );
 
-	const showModal = ( title, content, width ) =>
-	{
+	const showModal = ( title, content, width ) => {
 		setModal( {
 			content,
 			title,
@@ -53,8 +51,7 @@ const InventoryPage = ( props ) =>
 		} );
 	};
 
-	const handleCancel = () =>
-	{
+	const handleCancel = () => {
 		setModal( {
 			...modal,
 			isVisible: false,
@@ -64,20 +61,16 @@ const InventoryPage = ( props ) =>
 	const { Search } = Input;
 	const { Option } = Select;
 
-	const fetchProducts = () =>
-	{
-		fetchData( "products" ).then( ( res ) =>
-		{
-			if ( res.status === 200 )
-			{
+	const fetchProducts = () => {
+		fetchData( "products" ).then( ( res ) => {
+			if ( res.status === 200 ) {
 				setProducts( () => res.data.data );
 				setFilteredData( res.data.data );
 			}
 		} );
 	};
 
-	const deleteProduct = ( id ) =>
-	{
+	const deleteProduct = ( id ) => {
 		smalltalk.confirm(
 			"Delete Product", "Are you sure of deleting this product? Can't be undone!", {
 			buttons: {
@@ -85,12 +78,9 @@ const InventoryPage = ( props ) =>
 				cancel: 'NO',
 			},
 		}
-		).then( ok =>
-		{
-			deleteData( `products/${ id }` ).then( ( res ) =>
-			{
-				if ( res.status === 200 )
-				{
+		).then( ok => {
+			deleteData( `products/${ id }` ).then( ( res ) => {
+				if ( res.status === 200 ) {
 					fetchProducts();
 					openNotification( "Success", "product deleted", "success" )
 					return;
@@ -99,24 +89,20 @@ const InventoryPage = ( props ) =>
 				openNotification( "Error", "request not completed!", "error" )
 
 			} );
-		} ).catch( ex =>
-		{
+		} ).catch( ex => {
 			return false
 		} )
 	};
 
 	// handlers
-	const handleResetFilters = () =>
-	{
+	const handleResetFilters = () => {
 		setFilteredData( products );
 	};
-	const handleLowStockFilter = () =>
-	{
+	const handleLowStockFilter = () => {
 		setFilteredData( products.filter( ( p ) => p.minQty >= p.quantity ) );
 	};
 
-	useEffect( () =>
-	{
+	useEffect( () => {
 		fetchProducts();
 	}, [] );
 
@@ -229,20 +215,33 @@ const InventoryPage = ( props ) =>
 					title="Inventory"
 					className="site-page-header"
 					onBack={ () => window.history.go( -1 ) }
-					subTitle="all products and their details"></PageHeader>
+					subTitle="all products and their details">
+				</PageHeader>
 
-				{ getRole() === ( "admin" || "manager" ) && (
+				<div className="d-flex">
 					<Button
-						type="primary"
+						type="default"
 						size="large"
-						className="d-flex align-items-center "
+						className="d-flex align-items-center me-2"
 						onClick={ () =>
-							showModal( "Add Product", <ProductForm onReload={ fetchProducts } /> )
+							showModal( "Print Labels", <ProductLabels products={ products } />, "90vw" )
 						}>
-						<PlusOutlined />
-						Add Product
+						<PrinterOutlined />
+						Print Labels
 					</Button>
-				) }
+					{ getRole() === ( "admin" || "manager" ) && (
+						<Button
+							type="primary"
+							size="large"
+							className="d-flex align-items-center "
+							onClick={ () =>
+								showModal( "Add Product", <ProductForm onReload={ fetchProducts } /> )
+							}>
+							<PlusOutlined />
+							Add Product
+						</Button>
+					) }
+				</div>
 			</div>
 
 			<Modal
@@ -352,8 +351,7 @@ const InventoryPage = ( props ) =>
 								<strong>{ data.length }</strong> records
 							</Space>
 						) }
-						rowClassName={ ( record, index ) =>
-						{
+						rowClassName={ ( record, index ) => {
 							let classes = ""
 							if ( record.minQty >= record.quantity ) classes += " bg-warning "
 							if ( daysToExpiry( record.expiryDate ) <= 90 && daysToExpiry( record.expiryDate ) >= 0 ) classes += " bg-dark text-white "

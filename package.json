@@ -24,9 +24,11 @@
     "history": "^5.3.0",
     "html-to-image": "^1.9.0",
     "jotai": "^1.8.5",
+    "jsbarcode": "^3.11.5",
     "lodash": "^4.17.21",
     "log-to-file": "^3.0.0",
     "react": "^17.0.2",
+    "react-barcode": "^1.4.6",
     "react-chartjs-2": "^3.0.5",
     "react-dom": "^17.0.2",
     "react-error-boundary": "^3.1.4",
@@ -40,6 +42,8 @@
     "sanitize.css": "^13.0.0",
     "smalltalk": "^4.0.7",
     "url-slug": "^3.0.2",
+    "use-scan-detection": "^0.2.3",
+    "validator": "^13.7.0",
     "web-vitals": "^1.1.2",
     "worker-rpc": "^0.2.0",
     "xlsx": "^0.18.0",
@@ -53,8 +57,7 @@
     "electron-package": "./node_modules/.bin/electron-builder -c.extraMetadata.main=build/start-electron.js",
     "preelectron-package": "npm run build",
     "build": "react-scripts build",
-    "build-electron": "react-scripts build",
-    "electron:build": "npm run build-electron && electron-builder build --x64 --ia32 --publish never"
+    "electron:build": "npm run build && electron-builder build --x64 --ia32 --publish never"
   },
   "eslintConfig": {
     "extends": [

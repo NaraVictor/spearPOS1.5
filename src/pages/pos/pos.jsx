@@ -13,6 +13,7 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import SaleReceipt from "./receipt";
 import CustomerForm from "../../components/customer"
 import smalltalk from 'smalltalk'
+import useScanDetection from 'use-scan-detection'
 
 const POS = ( { category, categories, onExit } ) => {
 	const [ picked, setPicked ] = useState( [] );
@@ -138,6 +139,17 @@ const POS = ( { category, categories, onExit } ) => {
 			setFilteredProducts( saleProds.filter( p => p.categoryId === categoryId ) );
 		} );
 	};
+
+	// barcode scanner detection
+	useScanDetection( {
+		onComplete: code => {
+			// find product by code
+			const product = products.filter( p => p?.code === code )
+			product && addItem( product ) //add when product is found
+		},
+		minLength: 8, // EAN8 / standard for retail POS is EAN13
+	} );
+
 
 	const checkOut = () => {
 		setStatus( {

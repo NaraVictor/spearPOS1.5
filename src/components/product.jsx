@@ -4,14 +4,21 @@ import { useForm } from "react-hook-form";
 import { Spinner1 } from "./spinner";
 import { Switch } from "antd";
 import _ from 'lodash'
+import useScanDetection from 'use-scan-detection'
+import validator from 'validator'
+
+
 
 const ProductForm = ( { onReload } ) => {
-	const [ categories, setCategories ] = useState( [] );
-	const [ suppliers, setSuppliers ] = useState( [] );
-	const [ value, setValue ] = useState( {
+	const valueObject = {
+		code: "", //barcode -> EAN-13 (standard) and EAN-8 (4 prods with limited print space eg egg, etc)
 		category: "",
 		supplier: "",
-	} );
+	}
+
+	const [ categories, setCategories ] = useState( [] );
+	const [ suppliers, setSuppliers ] = useState( [] );
+	const [ value, setValue ] = useState( valueObject );
 
 	const { handleSubmit, register, reset } = useForm();
 	const [ status, setStatus ] = useState( {
@@ -30,6 +37,18 @@ const ProductForm = ( { onReload } ) => {
 			[ name ]: data,
 		} );
 	};
+
+	// automatically generate barcode for product
+	// const handleGenerateLabel = ( productName ) => {
+	// 	const data = {}
+	// 	const code = jsBarCode( data, productName )
+	// }
+
+	// barcode scanner detection
+	useScanDetection( {
+		onComplete: code => changeValue( code, "code" ),
+		minLength: 8, // EAN8 / standard for retail POS is EAN13
+	} );
 
 	useEffect( () => {
 		fetchData( "categories?type=product" )
@@ -50,6 +69,21 @@ const ProductForm = ( { onReload } ) => {
 	const submitProduct = ( data ) => {
 		setBusy( true );
 
+		// validate barcode
+		// if ( !validator.isEmpty( value.code ) && !validator.isEAN( value.code ) ) {
+		// 	setStatus( {
+		// 		err: true,
+		// 		errMsg: "Invalid Barcode. Must be an EAN (European Article Number) number",
+		// 	} );
+		// 	setBusy( false )
+		// 	return
+		// }
+
+		// console.log( value.code );
+		// setBusy( false )
+		// return
+
+
 		if ( isAService ) {
 			data.quantity = 1;
 			data.minQty = 0;
@@ -62,36 +96,38 @@ const ProductForm = ( { onReload } ) => {
 			isAService,
 			categoryId: value.category,
 			supplierId: value.supplier,
-		} )
-			.then( ( res ) => {
-				if ( res.status === 200 ) {
+			code: value.code
+		} ).then( ( res ) => {
+			if ( res.status === 200 ) {
+				setStatus( {
+					success: true,
+					successMsg: "Product successfully added",
+				} );
+				reset();
+				setValue( valueObject )
+				onReload();
+				setTimeout( () => {
 					setStatus( {
-						success: true,
-						successMsg: "Product successfully added",
+						err: false,
+						success: false,
 					} );
-					reset();
-					onReload();
-					setTimeout( () => {
-						setStatus( {
-							err: false,
-							success: false,
-						} );
-					}, 10000 );
-				}
-				else {
-					setStatus( {
-						err: true,
-						errMsg: res.response.data.message,
-					} );
-				}
-
-			} )
-			.catch( ( ex ) => {
-
+				}, 10000 );
+				// return
+			} else {
 				setStatus( {
 					err: true,
-					errMsg: "Sorry, something happened. Operation unsuccessful",
+					errMsg: res.response.data.message,
 				} );
+			}
+			// throw res
+		} )
+			.catch( ( ex ) => {
+				console.error( 'error' );
+				// setStatus( {
+				// 	err: true,
+				// 	// errMsg: ex.response.data.message,
+				// 	errMsg: "Sorry, something happened. Operation unsuccessful",
+				// } );
 				// reset();
 			} )
 			.finally( () => {
@@ -111,12 +147,18 @@ const ProductForm = ( { onReload } ) => {
 				) }
 				{ !busy && (
 					<>
-						<div className="row">
-							<div className="col-12 mb-3">
+						<div className="row align-items-center mb-3">
+							<div className="col-8">
 								<label htmlFor="location">Is this a service?</label>
 								<Switch onChange={ () => setIsService( !isAService ) } className="ms-2" />
 								<strong className="ms-2">{ isAService ? " Yes" : " No" }</strong>
 							</div>
+							{
+								value.code &&
+								<div className="col-4 p-2 text-center bg-success text-white rounded">
+									barcode added
+								</div>
+							}
 						</div>
 						<div className="row">
 							<div className="col-12">
@@ -271,9 +313,30 @@ const ProductForm = ( { onReload } ) => {
 									{ ...register( "location" ) }
 								/>
 							</div>
+							{/* <div className="col-md-6 col-12">
+								<label htmlFor="code">Barcode</label>
+								<input
+									type="text"
+									id="code"
+									className="form-control"
+									placeholder="barcode number"
+									value={ value.code }
+									onChange={ e => changeValue( e.target.value, "code" ) }
+								/>
+							</div> */}
 						</div>
 
 						<div className="row mb-3">
+							{/* <div className="col-12 mb-3">
+								<label htmlFor="location">Location</label>
+								<input
+									type="text"
+									id="location"
+									className="form-control"
+									placeholder="Product Location"
+									{ ...register( "location" ) }
+								/>
+							</div> */}
 							<div className="col-12">
 								<label htmlFor="description">Product Description/Note</label>
 								<textarea

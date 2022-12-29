@@ -1,8 +1,7 @@
 import PageTitle from "./../../components/page-title";
 import Summaries from "./components/summaries";
 import { useEffect, useState } from "react";
-import
-{
+import {
 	cedisLocale,
 	getExpiredProds,
 	openNotification,
@@ -33,8 +32,7 @@ import ExpiringProds from "../../components/expiring-prods";
 import { format } from "date-fns";
 // import { ErrorBoundary } from "react-error-boundary";
 
-const DashboardPage = ( props ) =>
-{
+const DashboardPage = ( props ) => {
 	// TODO: Refactor some of the states into an object
 	const [ products, setProducts ] = useState( [] );
 	const [ chart, setChart ] = useState( 0 );
@@ -57,8 +55,7 @@ const DashboardPage = ( props ) =>
 		width: "",
 	} );
 
-	const sumItems = ( prods ) =>
-	{
+	const sumItems = ( prods ) => {
 		let sum = 0;
 		prods.map( ( p ) => ( sum = sum + p.quantity ) );
 		setItems( () => sum );
@@ -69,24 +66,19 @@ const DashboardPage = ( props ) =>
 		updateList = false,
 		limited = true,
 		limit = 10
-	) =>
-	{
+	) => {
 		// sort products by salesCount
 		if ( _.isEmpty( prods ) ) return;
 		const sortedProducts = arraySort( prods, "salesCount", { reverse: true } );
 
-		if ( limited )
-		{
+		if ( limited ) {
 			let count = 0;
 			const list = [];
 
-			if ( sortedProducts.length < limit )
-			{
+			if ( sortedProducts.length < limit ) {
 				list.push( ...sortedProducts );
-			} else
-			{
-				while ( list.length < limit )
-				{
+			} else {
+				while ( list.length < limit ) {
 					list.push( sortedProducts[ count ] );
 					count++;
 				}
@@ -100,51 +92,41 @@ const DashboardPage = ( props ) =>
 		return sortedProducts;
 	};
 
-	const getTopLowStock = ( top ) =>
-	{
+	const getTopLowStock = ( top ) => {
 		const low = [];
 		if ( lowStock.length === 0 ) return low;
 
-		if ( lowStock.length >= top )
-		{
+		if ( lowStock.length >= top ) {
 			let count = 0;
-			while ( low.length < top )
-			{
+			while ( low.length < top ) {
 				low.push( lowStock[ count ] );
 				++count;
 			}
-		} else
-		{
+		} else {
 			low.push( ...lowStock );
 		}
 
 		return low;
 	};
 
-	const getRecentSales = ( top ) =>
-	{
+	const getRecentSales = ( top ) => {
 		const recentSales = [];
 		if ( sales.list.length === 0 ) return recentSales;
 
-		if ( sales.list.length >= top )
-		{
+		if ( sales.list.length >= top ) {
 			let count = 0;
-			while ( recentSales.length < top )
-			{
+			while ( recentSales.length < top ) {
 				recentSales.push( sales.list[ count ] );
 				++count;
 			}
-		} else
-		{
+		} else {
 			recentSales.push( ...sales.list );
 		}
 		return recentSales;
 	};
 
-	const getExpired = ( count ) =>
-	{
-		try
-		{
+	const getExpired = ( count ) => {
+		try {
 
 			if ( _.isEmpty( expired ) )
 				return []
@@ -154,15 +136,13 @@ const DashboardPage = ( props ) =>
 
 			return expired
 		}
-		catch ( ex )
-		{
+		catch ( ex ) {
 			openNotification( "System error", ex, "error" );
 			console.log( "error ", ex );
 		}
 	};
 
-	const showModal = ( title, content, width ) =>
-	{
+	const showModal = ( title, content, width ) => {
 		setModal( {
 			content,
 			title,
@@ -171,32 +151,25 @@ const DashboardPage = ( props ) =>
 		} );
 	};
 
-	const handleCancel = () =>
-	{
+	const handleCancel = () => {
 		setModal( {
 			...modal,
 			isVisible: false,
 		} );
 	};
 
-	const calcSaleSum = ( sales ) =>
-	{
+	const calcSaleSum = ( sales ) => {
 		let sum = 0;
-		sales.forEach( ( s ) =>
-		{
+		sales.forEach( ( s ) => {
 			sum += parseFloat( s.sumAmt );
 		} );
 		return sum;
 	};
 
-	useEffect( () =>
-	{
-		fetchData( "products" ).then( ( res ) =>
-		{
-			if ( res.status === 200 )
-			{
-				if ( !_.isEmpty( res.data.data ) )
-				{
+	useEffect( () => {
+		fetchData( "products" ).then( ( res ) => {
+			if ( res.status === 200 ) {
+				if ( !_.isEmpty( res.data.data ) ) {
 					setProducts( res.data.data );
 					sumItems( res.data.data );
 					const { lowStocks } = populateLowStock( res.data.data );
@@ -207,12 +180,9 @@ const DashboardPage = ( props ) =>
 			}
 		} );
 
-		fetchData( "dashboard" ).then( ( res ) =>
-		{
-			if ( res.status === 200 )
-			{
-				if ( !_.isEmpty( res.data.data ) )
-				{
+		fetchData( "dashboard" ).then( ( res ) => {
+			if ( res.status === 200 ) {
+				if ( !_.isEmpty( res.data.data ) ) {
 					setExpenses( res.data.data.expenses );
 					setSales( {
 						list: res.data.data.sales,
@@ -314,7 +284,7 @@ const DashboardPage = ( props ) =>
 								onClick={ () => setChart( () => 1 ) }
 								className={ `btn btn-sm btn-outline-secondary ${ chart === 1 && "active"
 									}` }>
-								expenses chart (PRO)
+								expenses chart
 							</label>
 						</div>
 						{ chart === 0 && (
@@ -330,12 +300,12 @@ const DashboardPage = ( props ) =>
 						{ chart === 1 && (
 							<>
 								<h6>Expenses chart</h6>
-								<h6>THIS IS A PRO FEATURE</h6>
-								{/* <Line
+								{/* <h6>THIS IS A PRO FEATURE</h6> */ }
+								<Line
 									data={ expensesChartData( sales?.dailyExpenses ) }
 									height={ 80 }
 									width={ 200 }
-								/> */}
+								/>
 							</>
 						) }
 					</div>
@@ -346,8 +316,7 @@ const DashboardPage = ( props ) =>
 							<h6>Low stocks</h6>
 							<Button
 								type="primary"
-								onClick={ () =>
-								{
+								onClick={ () => {
 									showModal( "Low Stocks", <LowStocks products={ lowStock } /> );
 								} }>
 								more
@@ -442,8 +411,7 @@ const DashboardPage = ( props ) =>
 								<h6><strong>Expiring(ed)</strong></h6>
 								<Button
 									type="primary"
-									onClick={ () =>
-									{
+									onClick={ () => {
 										showModal( "Expiring(ed) Products", <ExpiringProds products={ expired } /> );
 									} }>
 									more

@@ -4,8 +4,7 @@ import { fetchData, postData } from "./../../helpers/api";
 import checkIcon from "../../static/img/user.png";
 
 //
-const SignUpPage = ( props ) =>
-{
+const SignUpPage = ( props ) => {
 	const { register, handleSubmit, reset } = useForm();
 	const [ btnLabel, setLabel ] = useState( "Create Account" );
 	const [ submitted, setSubmission ] = useState( false );
@@ -19,16 +18,13 @@ const SignUpPage = ( props ) =>
 		</button>
 	);
 
-	const onSubmit = async ( data ) =>
-	{
-		try
-		{
+	const onSubmit = async ( data ) => {
+		try {
 			setError( false );
 			setLabel( "Please wait..." );
 			const signup = await postData( "accounts/signup", data, false );
 
-			if ( signup.status === 200 )
-			{
+			if ( signup.status === 200 ) {
 				setSubmission( true );
 				reset();
 				props.onDone();
@@ -38,10 +34,8 @@ const SignUpPage = ( props ) =>
 			setError( true );
 			setLabel( "Create Account" );
 			setErrMsg( "Request could not be completed. Staff may have an account" );
-		} catch ( ex )
-		{
-			if ( ex.response.status === 409 )
-			{
+		} catch ( ex ) {
+			if ( ex.response.status === 409 ) {
 				setError( true );
 				setLabel( "Create Account" );
 				setErrMsg( "User already exist" );
@@ -53,8 +47,7 @@ const SignUpPage = ( props ) =>
 		}
 	};
 
-	useEffect( () =>
-	{
+	useEffect( () => {
 		fetchData( "staffs" ).then( ( res ) => setStaff( () => res.data.data ) );
 	}, [] );
 
@@ -99,10 +92,10 @@ const SignUpPage = ( props ) =>
 											select role
 										</option>
 										<option value="admin">Admin</option>
-										{/* <option value="manager">Manager</option> */ }
-										{/* <option value="accounts">Accounts</option> */ }
-										<option value="" disabled>Manager (PRO)</option>
-										<option value="" disabled>Accounts (PRO)</option>
+										<option value="manager">Manager</option>
+										<option value="accounts">Accounts</option>
+										{/* <option value="" disabled>Manager (PRO)</option>
+										<option value="" disabled>Accounts (PRO)</option> */}
 										<option value="attendant">Attendant</option>
 									</select>
 								</div>

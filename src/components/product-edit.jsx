@@ -3,6 +3,9 @@ import { fetchData, updateData } from "../helpers/api";
 import { Button, Input, Select, Switch } from "antd";
 import { extractInputData, openNotification } from "./../helpers/utilities";
 import _ from 'lodash'
+import useScanDetection from 'use-scan-detection'
+import validator from 'validator'
+
 
 const ProductEdit = ( { prod, onReload } ) => {
 	const [ categories, setCategories ] = useState( [] );
@@ -10,6 +13,7 @@ const ProductEdit = ( { prod, onReload } ) => {
 	const [ record, setRecord ] = useState( {} );
 	const [ busy, setBusy ] = useState( false );
 	const [ catValue, setValue ] = useState( {
+		code: "",
 		category: "",
 		supplier: "",
 	} );
@@ -19,6 +23,7 @@ const ProductEdit = ( { prod, onReload } ) => {
 		errMsg: "",
 		successMsg: "",
 	} );
+	const [ barcodeMsg, setBarCodeMsg ] = useState( "barcode active" )
 
 	// variables
 	const { Option } = Select;
@@ -43,6 +48,7 @@ const ProductEdit = ( { prod, onReload } ) => {
 			isAService: prod.isAService,
 		} );
 		setValue( {
+			code: prod?.code,
 			category: prod.categoryId,
 			supplier: prod?.supplierId,
 		} );
@@ -62,6 +68,15 @@ const ProductEdit = ( { prod, onReload } ) => {
 			[ name ]: value,
 		} );
 	};
+
+	// barcode scanner detection
+	useScanDetection( {
+		onComplete: code => {
+			changeSelect( code, "code" )
+			setBarCodeMsg( "barcode updated" )
+		},
+		minLength: 8, // EAN8 / standard for retail POS is EAN13
+	} );
 
 	const fetchSuppliers = () => {
 		fetchData( `suppliers` ).then( ( res ) => {
@@ -83,8 +98,17 @@ const ProductEdit = ( { prod, onReload } ) => {
 
 	const updateProduct = ( e ) => {
 		const data = extractInputData( e );
-
 		setBusy( true );
+
+		// validate barcode
+		// if ( !validator.isEmpty( catValue.code ) && !validator.isEAN( catValue.code ) ) {
+		// 	setStatus( {
+		// 		err: true,
+		// 		errMsg: "Invalid Barcode. Must be an EAN (European Article Number) number",
+		// 	} );
+		// 	setBusy( false )
+		// 	return
+		// }
 
 		if ( catValue.category === undefined || null ) {
 			setBusy( false );
@@ -111,6 +135,7 @@ const ProductEdit = ( { prod, onReload } ) => {
 			isAService: record.isAService,
 			categoryId: catValue.category,
 			supplierId: catValue.supplier,
+			code: catValue.code,
 			id: record.id,
 		}
 
@@ -163,8 +188,8 @@ const ProductEdit = ( { prod, onReload } ) => {
 	return (
 		<div className="expense-box">
 			<form onSubmit={ ( e ) => updateProduct( e ) }>
-				<div className="row mb-3">
-					<div className="col-12">
+				<div className="row align-items-center mb-3">
+					<div className="col-8">
 						<label htmlFor="location">Is this a service?</label>
 						<Switch checked={ record.isAService } onChange={ () =>
 							setRecord( {
@@ -174,6 +199,12 @@ const ProductEdit = ( { prod, onReload } ) => {
 						} className="ms-2" />
 						<strong className="ms-2">{ record.isAService ? " Yes" : " No" }</strong>
 					</div>
+					{
+						catValue.code &&
+						<div className="col-4 p-2 text-center bg-success text-white rounded">
+							{ barcodeMsg }
+						</div>
+					}
 				</div>
 				<div className="row">
 					<div className="col-12">
@@ -311,8 +342,6 @@ const ProductEdit = ( { prod, onReload } ) => {
 								) ) }
 						</Select>
 					</div>
-
-
 				</div>
 				<div className="row my-3">
 					<div className="col-md-6 col-12">
@@ -338,10 +367,31 @@ const ProductEdit = ( { prod, onReload } ) => {
 							placeholder="Product Location"
 						/>
 					</div>
-
+					{/* <div className="col-md-6 col-12">
+						<label htmlFor="code">Barcode</label>
+						<Input
+							type="text"
+							name="code"
+							value={ catValue.code }
+							onChange={ e => changeSelect( e.target.value, "code" ) }
+							className="form-control"
+							placeholder="Product code"
+						/>
+					</div> */}
 				</div>
 
 				<div className="row mb-3">
+					{/* <div className="mb-3 col-12">
+						<label htmlFor="location">Location</label>
+						<Input
+							type="text"
+							name="location"
+							value={ record.location }
+							onChange={ handleRecordChange }
+							className="form-control"
+							placeholder="Product Location"
+						/>
+					</div> */}
 					<div className="col-12">
 						<label htmlFor="description">Product Description/Note</label>
 						<TextArea
