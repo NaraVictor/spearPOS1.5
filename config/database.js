@@ -10,9 +10,10 @@ module.exports = {
     dialect: "postgres"
   },
   production: {
-    username: CryptoJS.AES.encrypt( process.env.DB_USER, key ).toString( CryptoJS.enc.Utf8 ),
-    password: CryptoJS.AES.encrypt( process.env.DB_PASSWORD, key ).toString( CryptoJS.enc.Utf8 ),
-    database: CryptoJS.AES.encrypt( process.env.DB_NAME, key ).toString( CryptoJS.enc.Utf8 ),
+    username: CryptoJS.AES.decrypt( process.env.DB_USER, key ).toString( CryptoJS.enc.Utf8 ),
+    password: "admin",
+    // password: CryptoJS.AES.decrypt( process.env.DB_PASSWORD, key ).toString( CryptoJS.enc.Utf8 ),
+    database: CryptoJS.AES.decrypt( process.env.DB_NAME, key ).toString( CryptoJS.enc.Utf8 ),
     host: "localhost",
     dialect: "postgres"
   }
