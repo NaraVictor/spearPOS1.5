@@ -258,3 +258,25 @@ export const resetRegister = ( deletedId ) => {
 export const deleteRegister = () => {
 	delete window.posRegister;
 }
+
+
+
+// export const barCodeReader = () => {
+// 	if ( ( "BarcodeDetector" in window ) ) {
+// 		console.log( "Barcode Detector supported!" );
+
+// 		// create new detector
+// 		const barcodeDetector = new BarCodeDetector( {
+// 			formats: [ "code_39", "codabar", "ean_13", "ean_8" ],
+// 		} );
+
+// 		barcodeDetector
+// 			.detect( imageEl )
+// 			.then( ( barcodes ) => {
+// 				barcodes.forEach( ( barcode ) => console.log( barcode.rawValue ) );
+// 			} )
+// 			.catch( ( err ) => {
+// 				console.log( err );
+// 			} );
+// 	}
+// }

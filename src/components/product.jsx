@@ -46,7 +46,9 @@ const ProductForm = ( { onReload } ) => {
 
 	// barcode scanner detection
 	useScanDetection( {
-		onComplete: code => changeValue( code, "code" ),
+		onComplete: code => {
+			changeValue( code, "code" )
+		},
 		minLength: 8, // EAN8 / standard for retail POS is EAN13
 	} );
 
@@ -70,14 +72,14 @@ const ProductForm = ( { onReload } ) => {
 		setBusy( true );
 
 		// validate barcode
-		// if ( !validator.isEmpty( value.code ) && !validator.isEAN( value.code ) ) {
-		// 	setStatus( {
-		// 		err: true,
-		// 		errMsg: "Invalid Barcode. Must be an EAN (European Article Number) number",
-		// 	} );
-		// 	setBusy( false )
-		// 	return
-		// }
+		if ( !_.isNumber( parseInt( value.code ) ) ) {
+			setStatus( {
+				err: true,
+				errMsg: "Invalid Barcode. Must be an EAN (European Article Number) number",
+			} );
+			setBusy( false )
+			return
+		}
 
 		// console.log( value.code );
 		// setBusy( false )
@@ -96,7 +98,7 @@ const ProductForm = ( { onReload } ) => {
 			isAService,
 			categoryId: value.category,
 			supplierId: value.supplier,
-			code: value.code
+			code: _.trim( value.code )
 		} ).then( ( res ) => {
 			if ( res.status === 200 ) {
 				setStatus( {
@@ -165,7 +167,7 @@ const ProductForm = ( { onReload } ) => {
 								<label htmlFor="productName">Product Name *</label>
 								<input
 									type="text"
-									autoFocus
+									// autoFocus
 									id="productName"
 									placeholder="name of product"
 									className="form-control"

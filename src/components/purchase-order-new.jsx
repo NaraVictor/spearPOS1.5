@@ -1,21 +1,18 @@
 import PageTitle from "./page-title";
 import { useState, useEffect } from "react";
-import
-{
+import {
 	cedisLocale,
 	openNotification,
 	populateLowStock,
 } from "../helpers/utilities";
-import
-{
+import {
 	fetchData,
 	postData,
 } from "../helpers/api";
 import _ from "lodash";
 import { useForm } from "react-hook-form";
 import { Alert, PageHeader, Button, Table, Modal, Input, Tooltip } from "antd";
-import
-{
+import {
 	AlertFilled,
 	AppstoreAddOutlined,
 	ArrowRightOutlined,
@@ -26,9 +23,10 @@ import
 import ButtonGroup from "antd/lib/button/button-group";
 import ProductDetail from "./product-detail";
 import smalltalk from 'smalltalk'
+import useScanDetection from 'use-scan-detection'
 
-const PurchaseOrderForm = ( props ) =>
-{
+
+const PurchaseOrderForm = ( props ) => {
 	const { handleSubmit, register, reset } = useForm();
 	const [ prods, setProds ] = useState( [] );
 	const [ filteredData, setFilteredData ] = useState( [] );
@@ -54,8 +52,7 @@ const PurchaseOrderForm = ( props ) =>
 		width: "",
 	} );
 
-	const showModal = ( title, content, width ) =>
-	{
+	const showModal = ( title, content, width ) => {
 		setModal( {
 			content,
 			title,
@@ -64,28 +61,22 @@ const PurchaseOrderForm = ( props ) =>
 		} );
 	};
 
-	const handleCancel = () =>
-	{
+	const handleCancel = () => {
 		setModal( {
 			...modal,
 			isVisible: false,
 		} );
 	};
 
-	const fetchProducts = async () =>
-	{
-		fetchData( "products" ).then( ( res ) =>
-		{
-			if ( res.status === 200 )
-			{
-				setProds( res.data.data.filter( p =>
-				{
+	const fetchProducts = async () => {
+		fetchData( "products" ).then( ( res ) => {
+			if ( res.status === 200 ) {
+				setProds( res.data.data.filter( p => {
 					if ( !p?.isAService || _.isUndefined( p.isAService ) )
 						return p;
 				} ) );
 
-				setFilteredData( res.data.data.filter( p =>
-				{
+				setFilteredData( res.data.data.filter( p => {
 					if ( !p?.isAService || _.isUndefined( p.isAService ) )
 						return p;
 				} ) );
@@ -93,15 +84,13 @@ const PurchaseOrderForm = ( props ) =>
 		} );
 	}
 
-	const removeItem = ( prod ) =>
-	{
+	const removeItem = ( prod ) => {
 		const newSelected = selected.filter( ( s ) => s.id !== prod.id );
 		setSelected( () => newSelected );
 		setFilteredData( ( prev ) => [ ...prev, prod ] );
 	};
 
-	const addItem = ( prod ) =>
-	{
+	const addItem = ( prod ) => {
 		const newProds = filteredData.filter( ( p ) => p.id !== prod.id );
 		setFilteredData( () => newProds );
 		setSelected( ( prev ) => [ ...prev, prod ] );
@@ -111,14 +100,12 @@ const PurchaseOrderForm = ( props ) =>
 	// 	setFilteredData(filteredData.filter((p) => p.minQty >= p.quantity));
 	// };
 
-	const addAll = () =>
-	{
+	const addAll = () => {
 		setSelected( ( prev ) => [ ...prev, ...filteredData ] );
 		setFilteredData( [] );
 	};
 
-	const addAllLowStock = () =>
-	{
+	const addAllLowStock = () => {
 		// removeAllSelected();
 		const { lowStocks, remainder } = populateLowStock( filteredData );
 
@@ -131,30 +118,35 @@ const PurchaseOrderForm = ( props ) =>
 			setFilteredData( remainder );
 	};
 
-	const removeAllSelected = () =>
-	{
+
+	// barcode scanner detection
+	useScanDetection( {
+		onComplete: code => {
+			const prod = filteredData.find( p => p.code === code )
+			prod && addItem( prod )
+		},
+		minLength: 8, // EAN8 / standard for retail POS is EAN13
+	} );
+
+
+	const removeAllSelected = () => {
 		setFilteredData( [ ...prods ] );
 		setSelected( [] );
 	};
 
-	const isSelected = ( item ) =>
-	{
+	const isSelected = ( item ) => {
 		const found = selected.filter( ( s ) => s.id === item.id );
 		return found.length > 0 ? true : false;
 	};
 
-	const handleSearch = ( word ) =>
-	{
+	const handleSearch = ( word ) => {
 		let results = [];
 		// perform search on non-empty inputs only
-		if ( !_.isEmpty( word ) )
-		{
+		if ( !_.isEmpty( word ) ) {
 			// use original products list (not mutated)
-			prods.map( ( p ) =>
-			{
+			prods.map( ( p ) => {
 				// look for non-selected products
-				if ( !isSelected( p ) )
-				{
+				if ( !isSelected( p ) ) {
 					if (
 						p.productName.toLowerCase().includes( word.toLowerCase() ) ||
 						p.category.name.toLowerCase().includes( word.toLowerCase() )
@@ -172,27 +164,21 @@ const PurchaseOrderForm = ( props ) =>
 		setFilteredData( results );
 	};
 
-	const updateQty = ( value, pId ) =>
-	{
+	const updateQty = ( value, pId ) => {
 		value = parseInt( value ) || 0;
-		const newSelected = selected.map( ( s ) =>
-		{
+		const newSelected = selected.map( ( s ) => {
 			// find matching record
-			if ( s.id === pId )
-			{
+			if ( s.id === pId ) {
 				// check max stock constraint
-				if ( parseInt( s.quantity ) + value > parseInt( s.maxQty ) )
-				{
+				if ( parseInt( s.quantity ) + value > parseInt( s.maxQty ) ) {
 					// allow decrement of restock qty that's already above max stock
-					if ( value > s.restockQty )
-					{
+					if ( value > s.restockQty ) {
 						setStatus( {
 							err: true,
 							errMsg: `Max quantity (${ s.maxQty }) of ${ s.productName } will be exceeded!`,
 						} );
 
-						setTimeout( () =>
-						{
+						setTimeout( () => {
 							setStatus( {
 								err: false,
 							} );
@@ -210,18 +196,15 @@ const PurchaseOrderForm = ( props ) =>
 		setSelected( newSelected );
 	};
 
-	useEffect( () =>
-	{
+	useEffect( () => {
 		fetchProducts();
 		setSelected( [] );
 	}, [] );
 
-	useEffect( () =>
-	{
+	useEffect( () => {
 		let sumAmt = 0;
 		let sumQty = 0;
-		selected.forEach( ( s ) =>
-		{
+		selected.forEach( ( s ) => {
 			sumAmt += parseInt( s.restockQty ) * parseFloat( s.purchasePrice );
 			sumQty += parseInt( s.restockQty );
 		} );
@@ -232,17 +215,14 @@ const PurchaseOrderForm = ( props ) =>
 		} );
 	}, [ selected ] );
 
-	const postPurchaseOrder = ( data ) =>
-	{
-		if ( selected.length === 0 )
-		{
+	const postPurchaseOrder = ( data ) => {
+		if ( selected.length === 0 ) {
 			setStatus( {
 				err: true,
 				errMsg: "No products have been selected",
 			} );
 
-			setTimeout( () =>
-			{
+			setTimeout( () => {
 				setStatus( {
 					err: false,
 				} );
@@ -257,8 +237,7 @@ const PurchaseOrderForm = ( props ) =>
 				cancel: 'NO',
 			},
 		}
-		).then( yes =>
-		{
+		).then( yes => {
 
 			setLoading( true );
 
@@ -267,10 +246,8 @@ const PurchaseOrderForm = ( props ) =>
 				comment: data.comment,
 				selected,
 			} )
-				.then( ( res ) =>
-				{
-					if ( res.status === 200 )
-					{
+				.then( ( res ) => {
+					if ( res.status === 200 ) {
 						setStatus( {
 							success: true,
 							successMsg: "Products successfully restocked!",
@@ -284,8 +261,7 @@ const PurchaseOrderForm = ( props ) =>
 						reset();
 						fetchProducts(); // refetch products
 						openNotification( 'success', 'purchase order (restocking) successfully completed', 'success' )
-					} else
-					{
+					} else {
 						openNotification( 'error', res.response.data.message, 'error' )
 						setStatus( {
 							err: true,
@@ -295,16 +271,16 @@ const PurchaseOrderForm = ( props ) =>
 					}
 					// props.onDone(); //trigger props method -> has been causing an error  leading to display of error msgs
 				} )
-				.catch( ( ex ) =>
+				.catch( ( ex ) => {
+					// console.error( 'error' );
 					setStatus( {
 						err: true,
 						errMsg: "An error has occurred. Please try again",
 					} )
+				}
 				)
-				.finally( () =>
-				{
-					setTimeout( () =>
-					{
+				.finally( () => {
+					setTimeout( () => {
 						setStatus( {
 							success: false,
 							err: false,
@@ -313,8 +289,7 @@ const PurchaseOrderForm = ( props ) =>
 					setLoading( false );
 				} );
 		}
-		).catch( ex =>
-		{
+		).catch( ex => {
 			return false
 		} );
 	};
@@ -421,8 +396,7 @@ const PurchaseOrderForm = ( props ) =>
 					<input type="submit" value="" hidden id="submitter" />
 					<Button
 						type="default"
-						onClick={ () =>
-						{
+						onClick={ () => {
 							document.getElementById( "submitter" ).click();
 						} }
 						loading={ loading ? true : false }
@@ -439,7 +413,7 @@ const PurchaseOrderForm = ( props ) =>
 							onChange={ ( e ) => handleSearch( e.target.value ) }
 							placeholder={ `search (${ filteredData.length }) products by name or category` }
 							className="mb-2"
-							autoFocus
+						// autoFocus
 						/>
 						<Table
 							columns={ [

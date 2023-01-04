@@ -74,6 +74,7 @@ const ProductEdit = ( { prod, onReload } ) => {
 		onComplete: code => {
 			changeSelect( code, "code" )
 			setBarCodeMsg( "barcode updated" )
+			// console.log( 'code ', code );
 		},
 		minLength: 8, // EAN8 / standard for retail POS is EAN13
 	} );
@@ -100,7 +101,16 @@ const ProductEdit = ( { prod, onReload } ) => {
 		const data = extractInputData( e );
 		setBusy( true );
 
+
 		// validate barcode
+		if ( !_.isNumber( parseInt( catValue.code ) ) ) {
+			setStatus( {
+				err: true,
+				errMsg: "Invalid Barcode. Must be an EAN (European Article Number) number",
+			} );
+			setBusy( false )
+			return
+		}
 		// if ( !validator.isEmpty( catValue.code ) && !validator.isEAN( catValue.code ) ) {
 		// 	setStatus( {
 		// 		err: true,
@@ -135,7 +145,7 @@ const ProductEdit = ( { prod, onReload } ) => {
 			isAService: record.isAService,
 			categoryId: catValue.category,
 			supplierId: catValue.supplier,
-			code: catValue.code,
+			code: _.trim( catValue.code ),
 			id: record.id,
 		}
 
@@ -144,6 +154,8 @@ const ProductEdit = ( { prod, onReload } ) => {
 			finalObj.quantity = prod.quantity
 		}
 
+
+		setBusy( false );
 
 		updateData( "products", finalObj )
 			.then( ( res ) => {
@@ -211,7 +223,7 @@ const ProductEdit = ( { prod, onReload } ) => {
 						<label htmlFor="productName">Product Name *</label>
 						<Input
 							type="text"
-							autoFocus
+							// autoFocus
 							required
 							name="productName"
 							placeholder="name of product"

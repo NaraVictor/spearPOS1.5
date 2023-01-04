@@ -8,6 +8,7 @@ import CopyRight from "../../components/copyright"
 export default function ProductLabels ( { products, ...props } ) {
 
     const [ prods, setProducts ] = useState( [] )
+    // const [ copies, setCopies ] = useState( 1 ) //number of copies to print
     const printArea = React.useRef()
 
     const handlePrint = useReactToPrint( {

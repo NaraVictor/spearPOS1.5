@@ -2,7 +2,7 @@
 // selected customer will be entered into debtors collectin/table and payment tracked from there
 // same payment tracker as in sales field
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cedisLocale, getRegister, openNotification } from "../../helpers/utilities";
 import { fetchData, postData } from "../../helpers/api";
@@ -41,6 +41,8 @@ const POS = ( { category, categories, onExit } ) => {
 		title: "",
 		width: "",
 	} );
+
+	const scannerNode = React.createRef()
 
 	const { TextArea } = Input;
 
@@ -144,12 +146,11 @@ const POS = ( { category, categories, onExit } ) => {
 	useScanDetection( {
 		onComplete: code => {
 			// find product by code
-			const product = products.filter( p => p?.code === code )
-			product && addItem( product ) //add when product is found
+			const prod = products.find( p => p?.code === code )
+			if ( prod ) addItem( prod ) //add when product is found
 		},
 		minLength: 8, // EAN8 / standard for retail POS is EAN13
 	} );
-
 
 	const checkOut = () => {
 		setStatus( {
@@ -299,10 +300,11 @@ const POS = ( { category, categories, onExit } ) => {
 	}, [ picked ] );
 
 	return (
-		<div className="sale-box">
+		<div className="sale-box" id="salebox">
+
 			<Modal
 				title={ modal.title }
-				visible={ modal.isVisible }
+				open={ modal.isVisible }
 				footer={ null }
 				onCancel={ handleCancel }
 				width={ modal.width && modal.width }>
@@ -325,7 +327,7 @@ const POS = ( { category, categories, onExit } ) => {
 								perPage: 4,
 								pagination: false,
 								rewind: true,
-								width: 600,
+								width: 650,
 							} }
 							hasSliderWrapper>
 							{ categories
@@ -355,40 +357,40 @@ const POS = ( { category, categories, onExit } ) => {
 					<div className="row">
 						<div className="col-7">
 							<Search
-								placeholder="search by product name"
+								placeholder="search by name or barcode"
 								size="large"
 								className="mb-2"
-								autoFocus
 								onChange={ ( e ) =>
 									setFilteredProducts(
 										products.filter( ( p ) =>
 											p.productName
 												.toLowerCase()
-												.includes( e.target.value.toLowerCase() )
+												.includes( e.target.value.toLowerCase() ) ||
+											p.code?.includes( e.target.value )
 										)
 									)
 								}
 							/>
 							<div className="products">
-								<table className="table table-hover">
-									<tbody>
-										{ filteredProducts.map( ( p ) => {
-											return (
-												<tr
-													key={ p.id }
-													onClick={ () => addItem( p ) }
-													className="hover-hand">
-													<td>
-														<h6 className="m-0">{ p.productName }</h6>
-														<p className="text-secondary">
-															{ p.quantity } items left
-														</p>
-													</td>
-													<td>₵ { cedisLocale.format( parseFloat( p.sellingPrice ) ) }</td>
-												</tr>
-											);
-										} ) }
-									</tbody>
+								<table className="table table-hover">								<tbody>
+									{ filteredProducts.map( ( p ) => {
+										return (
+											<tr
+												key={ p.id }
+												onClick={ () => addItem( p ) }
+												className="hover-hand">
+												<td>
+													<h6 className="m-0">{ p.productName }</h6>
+													<p className="text-secondary">
+														{ p.quantity } items left
+														<small className="ms-2">{ p.code && `(code: ${ p.code })` }</small>
+													</p>
+												</td>
+												<td>₵ { cedisLocale.format( parseFloat( p.sellingPrice ) ) }</td>
+											</tr>
+										);
+									} ) }
+								</tbody>
 								</table>
 							</div>
 						</div>
@@ -603,7 +605,6 @@ const POS = ( { category, categories, onExit } ) => {
 
 				</div>
 			</div>
-
 		</div>
 	);
 };
