@@ -58,7 +58,8 @@
     "electron-package": "./node_modules/.bin/electron-builder -c.extraMetadata.main=build/start-electron.js",
     "preelectron-package": "npm run build",
     "build": "react-scripts build",
-    "electron:build": "npm run build && electron-builder build --x64 --ia32 --publish never"
+    "electron:build": "npm run build && electron-builder build --x64 --ia32 --publish never",
+    "electron:build-mac": "npm run build && electron-builder build --mac --x64 --ia32 --publish never"
   },
   "eslintConfig": {
     "extends": [
@@ -81,9 +82,9 @@
     ]
   },
   "build": {
-    "appId": "com.electron.spearPOS156",
+    "appId": "com.electron.spearPOS160",
     "productName": "Waffle spearPOS (PRO)",
-    "copyright": "Copyright © 2022 Waffle Technologies Ltd",
+    "copyright": "Copyright © 2023 Waffle Technologies Ltd",
     "files": [
       "build/**/*",
       "public/electron.js",
@@ -93,6 +94,12 @@
     "win": {
       "target": "nsis",
       "artifactName": "spearPOS(pro).exe"
+    },
+    "mac": {
+      "target": "dmg",
+      "type": "distribution",
+      "artifactName": "spearPOS.dmg",
+      "category": "public.app-category.business"
     }
   },
   "devDependencies": {
